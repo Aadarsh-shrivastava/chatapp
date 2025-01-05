@@ -1,16 +1,16 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const messageSchema = mongoose.Schema(
   {
-    user_name: {
-      type: String,
-      required: true,
+    sender: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
     },
-    user_avatar: {
-      type: String,
-      required: false,
+    chat: {
+      type: Schema.Types.ObjectId,
+      ref: "Chat",
     },
-    message_text: {
+    content: {
       type: String,
       required: true,
     },

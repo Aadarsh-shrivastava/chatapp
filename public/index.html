@@ -17,20 +17,68 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
       const socket = io();
+      socket.emit("setup", { _id: "675952fbc70507dab83606df" });
       const sendBtn = document.getElementById("sendBtn");
       const messageInput = document.getElementById("message");
       const allMessages = document.getElementById("messages");
+      const data = {
+        sender: {
+          _id: "675952fbc70507dab83606df",
+        },
+        chat: {
+          _id: "673ede3932b6eb3b24db6540",
+          chatName: "renamedChat",
+          isGroupChat: true,
+          users: ["675952fbc70507dab83606df", "673c4416057e3bfcf733a500"],
+          groupAdmins: [],
+          createdAt: "2024-11-21T07:16:09.235Z",
+          updatedAt: "2024-11-28T05:52:26.123Z",
+          __v: 0,
+        },
+      };
 
-      socket.on("message", (message) => {
+      const user = {
+        _id: "675952fbc70507dab83606df",
+        name: "arpit",
+        email: "arpit@gmail.com",
+        isAdmin: false,
+        token:
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NTk1MmZiYzcwNTA3ZGFiODM2MDZkZiIsImlhdCI6MTczNDQyNzQ3NiwiZXhwIjoxNzM3MDE5NDc2fQ.3FT5bMPrnVuJ0gJVTUBsCQ66YBpxjlsai_1GGyVFH6E",
+      };
+      const sendMessage = async (message) => {
+        try {
+          const response = await fetch(`http://localhost:5002/api/message/`, {
+            method: "POST",
+            body: JSON.stringify({
+              content: message,
+              chatId: "673ede3932b6eb3b24db6540",
+            }),
+            headers: {
+              "Content-type": "Application/json",
+              Authorization: `Bearer ${user?.token}` ?? "",
+            },
+          });
+
+          const resData = await response.json();
+          socket.emit("new message", resData);
+          console.log(data.content);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+
+      socket.on("new message", (message) => {
+        console.log("asdasds");
         const p = document.createElement("p");
-        p.innerText = message;
+        p.innerText = JSON.stringify(message.content);
         allMessages.appendChild(p);
       });
 
       sendBtn.addEventListener("click", (e) => {
         const message = messageInput.value;
-        console.log(message);
-        socket.emit("user-message", message);
+        const users = ["673c4416057e3bfcf733a500"];
+        console.log("frontend", message, users);
+        sendMessage(message);
       });
     </script>
   </body>
