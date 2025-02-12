@@ -15,7 +15,7 @@ export const allUsers = asyncHandler(async (req, res) => {
       }
     : {};
 
-  console.log(search, keyword);
+  console.log(req.query.search, keyword);
   const users = await User.find(keyword);
   // .find({ _id: { $ne: req.user._id } });
   res.send(users);
@@ -73,7 +73,7 @@ export const authUser = asyncHandler(async (req, res) => {
       name: user.name,
       email: user.email,
       isAdmin: user.isAdmin,
-      pic: user.pic,
+      picture: user.picture,
       token: generateJWTToken(user._id),
     });
   } else {

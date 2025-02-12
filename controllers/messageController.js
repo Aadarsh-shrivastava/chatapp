@@ -31,15 +31,22 @@ export const sendMessage = asyncHandler(async (req, res) => {
 
     const chat = await Chat.findOne({ _id: chatId });
     if (!chat) res.send("Chat not found");
-    console.log("chat found", chat);
-    const newMessage = {
-      sender: req.user,
-      chat: chat,
-      content: content,
-    };
 
-    Message.create(newMessage);
-    res.json(newMessage);
+    console.log("chat found", chat);
+    const newMessage = await Message.create({
+      sender: req.user._id, // Assuming req.user contains the sender's data
+      chat: chatId,
+      content: content,
+    });
+
+    chat.latestMessage = newMessage._id;
+    await chat.save();
+
+    const populatedMessage = await Message.findById(newMessage._id)
+      .populate("sender", "name email") // Assuming `sender` refers to a User
+      .populate("chat");
+
+    res.json(populatedMessage);
   } catch (error) {
     res.status(400);
     console.log(error);
